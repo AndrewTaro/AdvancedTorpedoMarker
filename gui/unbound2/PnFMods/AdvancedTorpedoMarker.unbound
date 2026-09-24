@@ -1,4 +1,4 @@
-(def constant TT_ADVANCEDTORPEDOMARKER_INSTALLED true)
+(def constant ATM_LOCK_SCALE 2.5)
 
 (def element WorldTorpedoMarker (_markerEntity:gfx) layout=true
 	(scope
@@ -6,26 +6,15 @@
 
 		(macro GET_MARKER_ENTITY_COMPONENT 'torpedo')
 		(macro VAR_RELATION "_markerEntity")
-		#mod
-		(macro GET_MARKER_ENTITY_COMPONENT 'data')
-		#
 
 		(var type:str = "torpedoComponent.type" (event "torpedoComponent.evTypeChanged"))
 
-		#mod
-		(var isHoming:bool = "dataComponent ? dataComponent.data.isHoming : false" (event "dataComponent.evChanged"))
-		(var markerColorTransform:dict = "relation == RELATION_NAMES.OWN ? TWO_TEAMS_COLOR_TRANSFORMS['ally'] : TWO_TEAMS_COLOR_TRANSFORMS[relation]")
-		
-		#(var visibleAsNormal:bool = "isIn(type, SC.Battle.TORPEDO_MARKER_TYPE.GUIDED_TYPES)")
+		(macro GET_MARKER_ENTITY_COMPONENT 'mods_DataComponent')
+		(var modData:dict = "mods_DataComponentComponent ? mods_DataComponentComponent.data : {}" (event "mods_DataComponentComponent.evDataChanged"))
+		(var isHoming:bool = "'isHoming' in modData ? modData.isHoming : false")
 
 		(var markerIcon:str = "'icon_torpedo_' + type + '_' + relation")
-		#
-
-		#fix for spotted indicator
-		(macro GET_MARKER_ENTITY_COMPONENT 'dataComponent')
-		(var isSpotted:bool = "dataComponentComponent ? dataComponentComponent.data.spotted > 0 : false" (event "dataComponentComponent.evDataChanged"))
-		(var isDWmarkerIcon:bool = "isIn(markerIcon, ['icon_torpedo_not_dangerous_ally', 'icon_torpedo_not_dangerous_enemy', 'icon_torpedo_not_dangerous_own'])")
-		#
+		(var isSpotted:bool = "'isSpotted' in modData ? modData.isSpotted : false")
 	)
 
 	(dispatch evMarkerShow args="{}" on='addedToStage')
@@ -36,55 +25,72 @@
 	)
 
 	(block
-		#Fix for spotted indicator
 		(block
-			(bind visible "isSpotted")
-			(style
-				(position = "absolute")
-				(top = -6)
-				(bind left "isDWmarkerIcon ? 0 : 2.25")
-				(alpha = 0.7)
-				(bind backgroundImage "'url:../unbound2/!battleframe/tpd_detection_indicator/icon_torpedo_spotted.png'")
-				(backgroundSize = "autosize")
-			)
-		)
-		#
-		#mod
-		(block
-			(block
-				(style
-					(bind backgroundImage "'url:../../../PnFMods/AdvancedTorpedoMarkerPy/torpedo_homing.png'")
-					(width = 24)
-					(height = 24)
-					(backgroundSize = "fill")
-					(position = "absolute")
-					(hcenter = 0px)
-				)
-				(bind visible "isHoming")
-				(bind colorTransform "markerColorTransform")
-			)
-			#
-
 			(block
 				(style
 					(bind backgroundImage "'url:../battle_hud/markers/torpedoes/' + markerIcon + '.png'")
 					(backgroundSize = "autosize")
 				)
+
+				(block
+					(style
+						(position = "absolute")
+						(hcenter = 0px)
+						(vcenter = 0px)
+						(pivotX = 50%)
+						(pivotY = 50%)
+						(alpha = 0)
+						(scaleX = "ATM_LOCK_SCALE")
+						(scaleY = "ATM_LOCK_SCALE")
+						(bind backgroundImage "'url:../ttaro/advanced_torpedo_marker/lock_' + relation + '.png'")
+						(backgroundSize = "autosize")
+					)
+					(controller $Animation
+						(bindcall play
+							id='homingLock'
+							duration=0.25
+							easing="isHoming ? Easing.cubic_in : Easing.quad_out"
+							action="kill"
+							from="{alpha: 0, scaleX: ATM_LOCK_SCALE, scaleY: ATM_LOCK_SCALE}"
+							to="{alpha: 1, scaleX: 1, scaleY: 1}"
+							reverse="!(isHoming)"
+							(bind trigger "isHoming")
+						)
+					)
+				)
+			)
+
+			(block
+				(bind visible "isSpotted")
+				(style
+					(position = "absolute")
+					(hcenter = 0px)
+					(top = -17px)
+					(alpha = 0)
+					(backgroundImage = "'url:../ttaro/advanced_torpedo_marker/spotted_dot.png'")
+					(backgroundSize = "autosize")
+				)
+				(controller $Animation
+					(bindcall play
+						id='spotted'
+						duration=0.15
+						action="kill"
+						from="{alpha: 0, top: -17px}"
+						to="{alpha: 1, top: -7px}"
+						(bind enabled "isSpotted")
+					)
+				)
 			)
 		)
 
 		(controller $Animation
-			(bindcall play	duration="0.15"
-							from="{alpha: 0, marginBottom: 10, scaleX: 1.5, scaleY: 1.5, ubScaleX: 1.5, ubScaleY: 1.5}"
-							to="{alpha: 1, marginBottom: 0, scaleX: 1, scaleY: 1, ubScaleX: 1, ubScaleY: 1}"
-							action="kill"
-							(event "evMarkerShow")
+			(bindcall play
+				duration="0.15"
+				from="{alpha: 0, marginBottom: 10, scaleX: 1.5, scaleY: 1.5, ubScaleX: 1.5, ubScaleY: 1.5}"
+				to="{alpha: 1, marginBottom: 0, scaleX: 1, scaleY: 1, ubScaleX: 1, ubScaleY: 1}"
+				action="kill"
+				(event "evMarkerShow")
 			)
 		)
 	)
-)
-
-#Fix for spotted indicator
-(def element BattleframeTpd() layout = true dispatch_size_change = true
-	(bindcall externalCall 'inputMapping.onAction' "['createParamsForAllShipsInBattle', {}]" on='addedToStage')
 )
