@@ -5,5 +5,75 @@
   "modName": "Advanced Torpedo Marker",
   "slug": "advanced-torpedo-marker",
   "order": 23,
-  "tree": []
+  "migrationVersion": 0,
+  "tree": [
+    {
+      "kind": "group",
+      "key": "cmuo6avo50006v0qwo4f60b1i",
+      "display": "section",
+      "label": "IDS_TT_DETECTION",
+      "children": [
+        {
+          "kind": "setting",
+          "control": "dropdown",
+          "key": "advTorpedoMarker.detection.displayMode",
+          "label": "IDS_TT_DISPLAY_MODE",
+          "hint": {
+            "text": "IDS_TT_HINT_DISPLAY_MODE"
+          },
+          "default": 1,
+          "options": [
+            {
+              "value": 0,
+              "phrase": "IDS_TURN_OFF"
+            },
+            {
+              "value": 1,
+              "phrase": "IDS_TURN_ON"
+            },
+            {
+              "value": 2,
+              "phrase": "IDS_ALT_VISION_MODE_1",
+              "icon": "CMD_ICONS"
+            }
+          ],
+          "optionStyle": "KEY"
+        }
+      ]
+    },
+    {
+      "kind": "group",
+      "key": "cmuo6avo9000av0qwy1f5w85z",
+      "display": "section",
+      "label": "IDS_TT_TITLE_HOMING_LOCK",
+      "children": [
+        {
+          "kind": "setting",
+          "control": "dropdown",
+          "key": "advTorpedoMarker.homing.displayMode",
+          "label": "IDS_TT_DISPLAY_MODE",
+          "hint": {
+            "text": "IDS_TT_HINT_DISPLAY_MODE"
+          },
+          "default": 1,
+          "options": [
+            {
+              "value": 0,
+              "phrase": "IDS_TURN_OFF"
+            },
+            {
+              "value": 1,
+              "phrase": "IDS_TURN_ON"
+            },
+            {
+              "value": 2,
+              "phrase": "IDS_ALT_VISION_MODE_1",
+              "icon": "CMD_ICONS"
+            }
+          ],
+          "optionStyle": "KEY"
+        }
+      ]
+    }
+  ]
 }

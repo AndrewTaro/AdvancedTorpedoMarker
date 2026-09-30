@@ -15,6 +15,17 @@
 
 		(var markerIcon:str = "'icon_torpedo_' + type + '_' + relation")
 		(var isSpotted:bool = "'isSpotted' in modData ? modData.isSpotted : false")
+
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var altVision:bool = "cameraComponent ? cameraComponent.altVision : false" (event "cameraComponent.evAltVisionChanged"))
+
+		(macro TT_GET_PREF _varName="'detectionModePref'" _key="'ttaro.advTorpedoMarker.detection.displayMode'")
+		(var detectionMode:number = "null != detectionModePref && null != detectionModePref.value ? detectionModePref.value : TT_CONST.DISPLAY_MODE.ENABLED")
+		(var isDetectionVisible:bool = "detectionMode == TT_CONST.DISPLAY_MODE.ADAPTIVE ? altVision : detectionMode == TT_CONST.DISPLAY_MODE.ENABLED")
+
+		(macro TT_GET_PREF _varName="'homingModePref'" _key="'ttaro.advTorpedoMarker.homing.displayMode'")
+		(var homingMode:number = "null != homingModePref && null != homingModePref.value ? homingModePref.value : TT_CONST.DISPLAY_MODE.ENABLED")
+		(var isHomingVisible:bool = "homingMode == TT_CONST.DISPLAY_MODE.ADAPTIVE ? altVision : homingMode == TT_CONST.DISPLAY_MODE.ENABLED")
 	)
 
 	(dispatch evMarkerShow args="{}" on='addedToStage')
@@ -33,6 +44,7 @@
 				)
 
 				(block
+					(bind visible "isHomingVisible")
 					(style
 						(position = "absolute")
 						(hcenter = 0px)
@@ -61,7 +73,7 @@
 			)
 
 			(block
-				(bind visible "isSpotted")
+				(bind visible "isSpotted && isDetectionVisible")
 				(style
 					(position = "absolute")
 					(hcenter = 0px)
