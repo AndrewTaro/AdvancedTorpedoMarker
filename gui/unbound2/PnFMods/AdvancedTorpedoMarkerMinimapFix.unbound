@@ -1,6 +1,8 @@
 (def element MapTorpedoMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
 	(scope
+
 		(var markerYaw:number = "radToGrad(_markerEntity.mapPosition.yaw) + 180.0" (event "evEnterFrame"))
+
 		(var markerScale:number = "_itemScale / _mapScale")
 
 		(macro GET_MARKER_ENTITY_COMPONENT 'torpedo')
@@ -15,11 +17,13 @@
 												:	'icon_torpedo_' + type + '_' + relation")
 	)
 	
+
 	(style
 		(width = 0) (height = 0)
 		(align = "center|middle")
 		(bind rotation "markerYaw")
 	)
+
 
 	(macro BIND_FAIR_SCALE "markerScale * 0.75")
 

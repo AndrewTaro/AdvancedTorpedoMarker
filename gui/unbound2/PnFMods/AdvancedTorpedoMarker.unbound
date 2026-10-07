@@ -1,4 +1,6 @@
+
 (def constant ATM_LOCK_SCALE 2.5)
+
 
 (def element WorldTorpedoMarker (_markerEntity:gfx) layout=true
 	(scope
@@ -9,9 +11,11 @@
 
 		(var type:str = "torpedoComponent.type" (event "torpedoComponent.evTypeChanged"))
 
+
 		(macro GET_MARKER_ENTITY_COMPONENT 'mods_DataComponent')
 		(var modData:dict = "mods_DataComponentComponent ? mods_DataComponentComponent.data : {}" (event "mods_DataComponentComponent.evDataChanged"))
 		(var isHoming:bool = "'isHoming' in modData ? modData.isHoming : false")
+
 
 		(var markerIcon:str = "'icon_torpedo_' + type + '_' + relation")
 		(var isSpotted:bool = "'isSpotted' in modData ? modData.isSpotted : false")
@@ -26,6 +30,7 @@
 		(macro TT_GET_PREF _varName="'homingModePref'" _key="'ttaro.advTorpedoMarker.homing.displayMode'")
 		(var homingMode:number = "null != homingModePref && null != homingModePref.value ? homingModePref.value : TT_CONST.DISPLAY_MODE.ENABLED")
 		(var isHomingVisible:bool = "homingMode == TT_CONST.DISPLAY_MODE.ADAPTIVE ? altVision : homingMode == TT_CONST.DISPLAY_MODE.ENABLED")
+
 	)
 
 	(dispatch evMarkerShow args="{}" on='addedToStage')
@@ -36,6 +41,7 @@
 	)
 
 	(block
+
 		(block
 			(block
 				(style
@@ -72,6 +78,8 @@
 				)
 			)
 
+
+
 			(block
 				(bind visible "isSpotted && isDetectionVisible")
 				(style
@@ -93,7 +101,9 @@
 					)
 				)
 			)
+
 		)
+
 
 		(controller $Animation
 			(bindcall play
